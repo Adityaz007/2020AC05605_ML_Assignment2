@@ -91,24 +91,6 @@ elif model_choice == "Naive Bayes":
 elif model_choice == "Random Forest":
     model = RandomForestClassifier(n_estimators=100)
 
-# Model selection dropdown
-model_choice = st.selectbox(
-    "Choose a model",
-    ["Logistic Regression", "Decision Tree", "kNN", "Naive Bayes", "Random Forest"]
-)
-
-# Select model
-if model_choice == "Logistic Regression":
-    model = LogisticRegression(max_iter=1000)
-elif model_choice == "Decision Tree":
-    model = DecisionTreeClassifier()
-elif model_choice == "kNN":
-    model = KNeighborsClassifier(n_neighbors=5)
-elif model_choice == "Naive Bayes":
-    model = GaussianNB()
-elif model_choice == "Random Forest":
-    model = RandomForestClassifier(n_estimators=100)
-
 # Train on training data
 model.fit(X_train, y_train)
 
