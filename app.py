@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import streamlit as st
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
@@ -8,6 +9,10 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.ensemble import RandomForestClassifier
 
+from sklearn.model_selection import train_test_split
+
+
+st.title("Wine Quality Classification")
 
 # Load dataset Red Winequality
 url_red = "https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv"
@@ -20,6 +25,21 @@ wine_white = pd.read_csv(url_white, sep=';')
 # Step 4: Combine both datasets
 wine_data = pd.concat([wine_red, wine_white], axis=0)
 
+
+X = wine_data.drop('quality', axis=1)
+y = wine_data['quality']
+
+# Split into train/test
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42, stratify=y
+)
+
+# Combine X_test and y_test into one DataFrame
+test_data = X_test.copy()
+test_data['quality'] = y_test
+
+# Save to CSV
+test_data.to_csv("test_data.csv", index=False)
 
 print("Dataset shape:", wine_data.shape)
 print(wine_data.head())
@@ -75,3 +95,44 @@ for name, model in models.items():
 import pandas as pd
 results_df = pd.DataFrame(results).T
 print(results_df)
+
+if test_data is not None:
+    st.write("Test Data Preview:", test_data.head())
+
+    # Separate features and target
+    X_test = test_data.drop("quality", axis=1)
+    y_test = test_data["quality"]
+
+    # Model selection dropdown
+    model_choice = st.selectbox("Choose a model", 
+                                ["Logistic Regression", "Decision Tree", "kNN", "Naive Bayes", "Random Forest"])
+
+if model_choice == "Logistic Regression":
+        model = LogisticRegression(max_iter=1000)
+        # Normally you’d load a pre-trained model here
+        model.fit(X_test, y_test)  # ⚠️ Replace with loading saved model
+        y_pred = model.predict(X_test)
+elif model_choice == "Decision Tree Classifier":
+          model = DecisionTreeClassifier(max_iter=1000)
+        # Normally you’d load a pre-trained model here
+          model.fit(X_test, y_test)  # ⚠️ Replace with loading saved model
+          y_pred = model.predict(X_test)
+elif model_choice == "K-Nearest Neighbor Classifier":
+          model = KNeighborsClassifier(max_iter=1000)
+        # Normally you’d load a pre-trained model here
+          model.fit(X_test, y_test)  # ⚠️ Replace with loading saved model
+          y_pred = model.predict(X_test)
+elif model_choice == "Naive Bayes Classifier - Gaussian or Multinomial":
+          model = GaussianNB(max_iter=1000)
+        # Normally you’d load a pre-trained model here
+          model.fit(X_test, y_test)  # ⚠️ Replace with loading saved model
+          y_pred = model.predict(X_test)
+elif model_choice == "Ensemble Model - Random Forest":
+          model = RandomForestClassifier(max_iter=1000)
+        # Normally you’d load a pre-trained model here
+          model.fit(X_test, y_test)  # ⚠️ Replace with loading saved model
+          y_pred = model.predict(X_test)
+
+# Show metrics
+acc = accuracy_score(y_test, y_pred)
+st.write("Accuracy:", acc)
